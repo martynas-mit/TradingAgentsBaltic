@@ -169,6 +169,10 @@ def build_default_config() -> dict:
         "tool_vendors": {
             # Example: "get_stock_data": "alpha_vantage",  # Override category default
         },
+        # Nasdaq Baltic instrument registry (names, issuer, LEI) used by the
+        # Baltic data vendors. None reads the registry packaged with
+        # tradingagents (dataflows/baltic/instruments.toml); a path reads your own.
+        "baltic_registry_path": os.getenv("TRADINGAGENTS_BALTIC_REGISTRY") or None,
         # Benchmark for alpha calculation in the reflection layer.
         # ``benchmark_ticker`` (when set) overrides the suffix map for all
         # tickers; leave it None to use ``benchmark_map`` for auto-detection
@@ -200,6 +204,9 @@ def build_default_config() -> dict:
             ".SS":  "000001.SS",   # Shanghai (SSE Composite)
             ".SZ":  "399001.SZ",   # Shenzhen (SZSE Component)
             ".SA":  "^BVSP",       # B3 Brazil (Ibovespa)
+            ".VS":  "^OMXVGI",     # Nasdaq Vilnius (OMX Vilnius GI)
+            ".RG":  "^OMXBBGI",    # Nasdaq Riga (OMX Baltic Benchmark GI)
+            ".TL":  "^OMXBBGI",    # Nasdaq Tallinn (OMX Baltic Benchmark GI)
             "":     "SPY",         # default for US-listed tickers (no suffix)
         },
 

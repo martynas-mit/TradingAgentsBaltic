@@ -1,0 +1,32 @@
+# Nasdaq Baltic instruments the Baltic data vendors know about.
+#
+# One [[instrument]] table per share. Keys:
+#   ticker   Yahoo Finance symbol, with the exchange suffix (.VS Vilnius,
+#            .RG Riga, .TL Tallinn). The bare share code (APG1L) resolves to it.
+#   name     Company name as reports and news name it.
+#   issuer   The issuer's name in Nasdaq's company-announcement service
+#            (api.news.eu.nasdaq.com, the "company" field). It is also the
+#            "Issuer" choice on nasdaqbaltic.com/statistics/en/news.
+#   lei      Legal Entity Identifier, used to find ESEF filings on filings.xbrl.org.
+#   sector   Report template for fundamentals: "bank" or "general".
+#   aliases  Other names the company is or was known by (former names, the
+#            Lithuanian form, old share codes), for searching news.
+#
+# Add a share by copying a table. Point TRADINGAGENTS_BALTIC_REGISTRY at your
+# own copy of this file to keep additions outside the package.
+
+[[instrument]]
+ticker = "APG1L.VS"
+name = "APB Apranga"
+issuer = "Apranga"
+lei = "529900XX7EU9F4GJTY86"
+sector = "general"
+aliases = ["Apranga", "Apranga Group", "Aprangos grupė"]
+
+[[instrument]]
+ticker = "ROE1L.VS"
+name = "AB Artea bankas"
+issuer = "Artea Bankas"
+lei = "549300TK038P6EV4YU51"
+sector = "bank"
+aliases = ["Artea", "Šiaulių bankas", "Siauliu bankas", "SAB1L"]

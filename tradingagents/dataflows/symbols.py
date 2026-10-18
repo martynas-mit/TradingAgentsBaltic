@@ -12,6 +12,9 @@ differ from the broker / TradingView / MT5 style symbols users often type:
     SPX500, US500     ^GSPC             index CFDs map to Yahoo index symbols
     09992.HK, 700.HK  9992.HK, 0700.HK  HK codes are zero-padded to 4 digits
     600519.SH         600519.SS         Yahoo spells Shanghai ``.SS``
+    APG1L, LHV1T      APG1L.VS, ...     a Nasdaq Baltic share code takes its
+                                        exchange's suffix (L Vilnius ``.VS``,
+                                        R Riga ``.RG``, T Tallinn ``.TL``)
 
 Passing the raw broker symbol to Yahoo returns an empty result, which the
 agents previously received as free text and could hallucinate a price
@@ -70,6 +73,11 @@ _ALIASES = {
 # HKEX codes as Yahoo spells them: the number zero-padded to 4 digits (#957).
 _HK_CODE = re.compile(r"^(\d{1,5})\.HK$")
 _SHANGHAI_SH = re.compile(r"^(\d{6})\.SH$")
+# Nasdaq Baltic share codes: 3-4 letters, a digit, and the exchange letter
+# (APG1L Vilnius, GRD1R Riga, LHV1T Tallinn). Yahoo lists them only with the
+# exchange's suffix, so the bare code finds nothing there.
+_BALTIC_CODE = re.compile(r"^([A-Z]{3,4}\d)([LRT])$")
+_BALTIC_SUFFIX = {"L": ".VS", "R": ".RG", "T": ".TL"}
 
 
 # Crypto quote currencies that all map to Yahoo's USD pair. Yahoo lists only
@@ -111,7 +119,10 @@ def normalize_symbol(raw: str) -> str:
       4. HK rule: a numeric ``.HK`` code -> Yahoo's 4-digit padding
          (``09992.HK`` -> ``9992.HK``, ``700.HK`` -> ``0700.HK``).
       5. Shanghai rule: ``600519.SH`` -> ``600519.SS``.
-      6. Otherwise the upper-cased symbol is returned unchanged (plain
+      6. Baltic rule: a bare Nasdaq Baltic share code -> its exchange suffix
+         (``APG1L`` -> ``APG1L.VS``, ``GRD1R`` -> ``GRD1R.RG``,
+         ``LHV1T`` -> ``LHV1T.TL``).
+      7. Otherwise the upper-cased symbol is returned unchanged (plain
          equities, ETFs, Yahoo-native symbols like ``GC=F`` or ``^GSPC``).
 
     A trailing ``+`` (broker CFD marker, e.g. ``XAUUSD+``) is stripped before
@@ -136,6 +147,8 @@ def normalize_symbol(raw: str) -> str:
         canonical = f"{int(hk.group(1)):04d}.HK"
     elif sh := _SHANGHAI_SH.match(s):
         canonical = f"{sh.group(1)}.SS"
+    elif baltic := _BALTIC_CODE.match(s):
+        canonical = f"{s}{_BALTIC_SUFFIX[baltic.group(2)]}"
     else:
         canonical = s
 
