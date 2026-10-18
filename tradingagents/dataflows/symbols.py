@@ -74,7 +74,7 @@ _ALIASES = {
 _HK_CODE = re.compile(r"^(\d{1,5})\.HK$")
 _SHANGHAI_SH = re.compile(r"^(\d{6})\.SH$")
 # Nasdaq Baltic share codes: 3-4 letters, a digit, and the exchange letter
-# (APG1L Vilnius, GRD1R Riga, LHV1T Tallinn). Yahoo lists them only with the
+# (APG1L Vilnius, SAF1R Riga, LHV1T Tallinn). Yahoo lists them only with the
 # exchange's suffix, so the bare code finds nothing there.
 _BALTIC_CODE = re.compile(r"^([A-Z]{3,4}\d)([LRT])$")
 _BALTIC_SUFFIX = {"L": ".VS", "R": ".RG", "T": ".TL"}
@@ -120,7 +120,7 @@ def normalize_symbol(raw: str) -> str:
          (``09992.HK`` -> ``9992.HK``, ``700.HK`` -> ``0700.HK``).
       5. Shanghai rule: ``600519.SH`` -> ``600519.SS``.
       6. Baltic rule: a bare Nasdaq Baltic share code -> its exchange suffix
-         (``APG1L`` -> ``APG1L.VS``, ``GRD1R`` -> ``GRD1R.RG``,
+         (``APG1L`` -> ``APG1L.VS``, ``SAF1R`` -> ``SAF1R.RG``,
          ``LHV1T`` -> ``LHV1T.TL``).
       7. Otherwise the upper-cased symbol is returned unchanged (plain
          equities, ETFs, Yahoo-native symbols like ``GC=F`` or ``^GSPC``).

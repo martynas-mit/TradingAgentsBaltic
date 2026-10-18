@@ -644,7 +644,7 @@ class TestDeferredReflection:
     @pytest.mark.parametrize(("ticker", "index"), [
         ("2330.TW", "^TWII"), ("6488.TWO", "^TWII"), ("005930.KS", "^KS11"), ("247540.KQ", "^KQ11"), ("D05.SI", "^STI"), ("SAP.DE", "^GDAXI"),
         ("MC.PA", "^FCHI"), ("ASML.AS", "^AEX"), ("NESN.SW", "^SSMI"), ("ENI.MI", "FTSEMIB.MI"),
-        ("APG1L.VS", "^OMXVGI"), ("APG1L", "^OMXVGI"), ("GRD1R.RG", "^OMXBBGI"), ("LHV1T.TL", "^OMXBBGI"),
+        ("APG1L.VS", "^OMXVGI"), ("APG1L", "^OMXVGI"), ("SAF1R.RG", "^OMXRGI"), ("LHV1T.TL", "^OMXTGI"),
     ])
     def test_resolve_benchmark_regional_indexes(self, ticker, index):
         """Taiwan, Korea, Singapore and the main European exchanges were measured against SPY."""

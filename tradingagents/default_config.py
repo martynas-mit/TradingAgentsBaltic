@@ -205,8 +205,8 @@ def build_default_config() -> dict:
             ".SZ":  "399001.SZ",   # Shenzhen (SZSE Component)
             ".SA":  "^BVSP",       # B3 Brazil (Ibovespa)
             ".VS":  "^OMXVGI",     # Nasdaq Vilnius (OMX Vilnius GI)
-            ".RG":  "^OMXBBGI",    # Nasdaq Riga (OMX Baltic Benchmark GI)
-            ".TL":  "^OMXBBGI",    # Nasdaq Tallinn (OMX Baltic Benchmark GI)
+            ".RG":  "^OMXRGI",     # Nasdaq Riga (OMX Riga GI)
+            ".TL":  "^OMXTGI",     # Nasdaq Tallinn (OMX Tallinn GI)
             "":     "SPY",         # default for US-listed tickers (no suffix)
         },
 

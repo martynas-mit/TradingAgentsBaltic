@@ -72,12 +72,12 @@ class TestNormalizeSymbol(unittest.TestCase):
     def test_bare_baltic_code_takes_its_exchange_suffix(self):
         self.assertEqual(normalize_symbol("APG1L"), "APG1L.VS")
         self.assertEqual(normalize_symbol("roe1l"), "ROE1L.VS")
-        self.assertEqual(normalize_symbol("GRD1R"), "GRD1R.RG")
+        self.assertEqual(normalize_symbol("SAF1R"), "SAF1R.RG")
         self.assertEqual(normalize_symbol("LHV1T"), "LHV1T.TL")
         self.assertEqual(normalize_symbol("TKM1T"), "TKM1T.TL")
 
     def test_suffixed_baltic_code_unchanged(self):
-        for sym in ("APG1L.VS", "GRD1R.RG", "LHV1T.TL"):
+        for sym in ("APG1L.VS", "SAF1R.RG", "LHV1T.TL"):
             self.assertEqual(normalize_symbol(sym), sym)
 
     def test_baltic_rule_leaves_other_shapes_alone(self):
