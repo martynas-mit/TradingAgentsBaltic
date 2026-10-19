@@ -28,7 +28,7 @@ BALTIC_SUFFIXES = tuple(MARKETS)
 SECTORS = frozenset({"general", "bank"})
 
 _REQUIRED = ("ticker", "name", "issuer")
-_OPTIONAL = ("lei", "sector", "aliases")
+_OPTIONAL = ("lei", "sector", "aliases", "press_names")
 _PACKAGED = "instruments.toml"
 
 
@@ -46,6 +46,7 @@ class BalticInstrument:
     lei: str | None = None
     sector: str = "general"
     aliases: tuple[str, ...] = ()
+    press_names: tuple[str, ...] = ()
 
     @property
     def market(self) -> str:
@@ -62,6 +63,16 @@ class BalticInstrument:
                 seen.add(value.casefold())
                 names.append(value)
         return tuple(names)
+
+    @property
+    def press_markers(self) -> tuple[str, ...]:
+        """Text a local headline must contain to be about the company (case-sensitive).
+
+        A company named with a common word (Apranga is Lithuanian for clothing)
+        needs markers such as the quoted form („Apranga); by default the name
+        and the issuer name serve.
+        """
+        return self.press_names or (self.name, self.issuer)
 
 
 def is_baltic(ticker: str) -> bool:
@@ -90,9 +101,12 @@ def _parse_entry(raw: object, where: str) -> BalticInstrument:
     lei = raw.get("lei")
     if lei is not None and (not isinstance(lei, str) or len(lei) != 20 or not lei.isalnum()):
         raise RegistryError(f"{where}: lei {lei!r} is not a 20-character LEI")
-    aliases = raw.get("aliases", [])
-    if not isinstance(aliases, list) or not all(isinstance(a, str) for a in aliases):
-        raise RegistryError(f"{where}: aliases must be a list of strings")
+    lists = {}
+    for key in ("aliases", "press_names"):
+        value = raw.get(key, [])
+        if not isinstance(value, list) or not all(isinstance(v, str) for v in value):
+            raise RegistryError(f"{where}: {key} must be a list of strings")
+        lists[key] = tuple(v.strip() for v in value if v.strip())
 
     return BalticInstrument(
         ticker=ticker,
@@ -100,7 +114,8 @@ def _parse_entry(raw: object, where: str) -> BalticInstrument:
         issuer=raw["issuer"].strip(),
         lei=lei.upper() if lei else None,
         sector=sector,
-        aliases=tuple(a.strip() for a in aliases if a.strip()),
+        aliases=lists["aliases"],
+        press_names=lists["press_names"],
     )
 
 

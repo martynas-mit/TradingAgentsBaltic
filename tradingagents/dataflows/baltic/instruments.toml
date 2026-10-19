@@ -11,6 +11,11 @@
 #   sector   Report template for fundamentals: "bank" or "general".
 #   aliases  Other names the company is or was known by (former names, the
 #            Lithuanian form, old share codes), for searching news.
+#   press_names  Text a local-language headline must contain (case-sensitive)
+#            to count as news about the company. Needed when the name is also
+#            a common word: "apranga" is Lithuanian for clothing, so only the
+#            quoted company name („Apranga) marks a headline about it.
+#            Defaults to name and issuer.
 #
 # Add a share by copying a table. Point TRADINGAGENTS_BALTIC_REGISTRY at your
 # own copy of this file to keep additions outside the package.
@@ -22,6 +27,7 @@ issuer = "Apranga"
 lei = "529900XX7EU9F4GJTY86"
 sector = "general"
 aliases = ["Apranga", "Apranga Group", "Aprangos grupė"]
+press_names = ["„Apranga", "„Aprangos", "APB Apranga", "Apranga APB", "Apranga Group", "Aprangos grupė"]
 
 [[instrument]]
 ticker = "ROE1L.VS"
@@ -30,3 +36,4 @@ issuer = "Artea Bankas"
 lei = "549300TK038P6EV4YU51"
 sector = "bank"
 aliases = ["Artea", "Šiaulių bankas", "Siauliu bankas", "SAB1L"]
+press_names = ["Artea", "Šiaulių bank", "Siauliu bank"]

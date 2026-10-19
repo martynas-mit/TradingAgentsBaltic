@@ -161,9 +161,9 @@ def build_default_config() -> dict:
             # Statements come from SEC EDGAR as filed (US filers), then Yahoo; the
         # overview and insider tools, which SEC EDGAR does not serve, from Yahoo.
         "fundamental_data": "sec_edgar,yfinance",  # Options: sec_edgar, alpha_vantage, yfinance
-            # Nasdaq Baltic first: it serves the Baltic shares in the registry
-            # and passes every other ticker on to Yahoo.
-            "news_data": "nasdaq_baltic,yfinance",  # Options: nasdaq_baltic, alpha_vantage, yfinance
+            # Baltic sources first: they serve the Baltic shares in the registry
+            # (Nasdaq announcements + press) and pass every other ticker to Yahoo.
+            "news_data": "baltic,yfinance",  # Options: baltic, nasdaq_baltic, alpha_vantage, yfinance
             "macro_data": "fred",                # Options: fred (needs FRED_API_KEY)
             "prediction_markets": "polymarket",  # Options: polymarket (keyless)
         },

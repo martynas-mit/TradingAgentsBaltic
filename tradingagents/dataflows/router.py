@@ -17,6 +17,10 @@ from tradingagents.dataflows.vendors.alpha_vantage import (
     get_news as get_alpha_vantage_news,
     get_stock as get_alpha_vantage_stock,
 )
+from tradingagents.dataflows.vendors.baltic import (
+    get_insider_transactions as get_baltic_insider_transactions,
+    get_news as get_baltic_news,
+)
 from tradingagents.dataflows.vendors.fred import get_macro_data as get_fred_macro_data
 from tradingagents.dataflows.vendors.nasdaq_baltic import (
     get_insider_transactions as get_nasdaq_baltic_insider_transactions,
@@ -131,6 +135,7 @@ VENDOR_METHODS = {
     },
     # news_data
     "get_news": {
+        "baltic": get_baltic_news,
         "nasdaq_baltic": get_nasdaq_baltic_news,
         "alpha_vantage": get_alpha_vantage_news,
         "yfinance": get_news_yfinance,
@@ -140,6 +145,7 @@ VENDOR_METHODS = {
         "alpha_vantage": get_alpha_vantage_global_news,
     },
     "get_insider_transactions": {
+        "baltic": get_baltic_insider_transactions,
         "nasdaq_baltic": get_nasdaq_baltic_insider_transactions,
         "alpha_vantage": get_alpha_vantage_insider_transactions,
         "yfinance": get_yfinance_insider_transactions,
