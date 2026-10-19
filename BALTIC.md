@@ -15,11 +15,23 @@ Scope for now: shares only. Index funds and ETFs come later.
 | Prices and indicators | Yahoo, as for any other market (history from 2002 for both sample shares) |
 | Benchmark for alpha | `.VS` against `^OMXVGI`, `.RG` against `^OMXRGI`, `.TL` against `^OMXTGI` |
 | Instrument registry | `tradingagents/dataflows/baltic/instruments.toml`: issuer name in Nasdaq's announcement service, LEI, sector, former names |
-| Company news | Not yet: Yahoo tags no articles to Baltic listings |
-| Statements, insider trades, euro-area macro | Not yet |
+| Company news | `nasdaq_baltic` vendor: the issuer's announcements on Nasdaq Baltic with their text (monthly turnover, results, dividends, AGM decisions), dated by publication |
+| Insider trades | `nasdaq_baltic` vendor: managers' transactions notified under MAR article 19 in the year to the run date; trade details are in each notice's text or PDF |
+| Statements, euro-area macro | Not yet |
 
 ```bash
 tradingagents --ticker APG1L --date 2026-10-16 --analysts market,news --save --no-show
+```
+
+The default news chain is `nasdaq_baltic,yfinance`: a share in the registry is
+served from Nasdaq; any other ticker, or Nasdaq being unreachable, falls through
+to Yahoo as before. Announcement texts are cached under
+`<data_cache_dir>/nasdaq_baltic/`.
+
+Live check (reaches the network):
+
+```bash
+pytest -m integration tests/test_nasdaq_baltic_live.py -s
 ```
 
 ## Registry
@@ -33,7 +45,7 @@ your own copy outside the package with
 
 | Source | Finding |
 | --- | --- |
-| Nasdaq announcement API `api.news.eu.nasdaq.com/news/query.action` | JSON; `company=<issuer>` filters by issuer; returns category (e.g. managers' transactions), EN/LT versions, PDF attachments; history from 2019 (Artea's includes the Šiaulių bankas years). `fromDate`/`toDate` are ignored, so pages are read newest first and cut by date. Served through Imperva: confirm a plain HTTP client gets JSON. |
+| Nasdaq announcement API `api.news.eu.nasdaq.com/news/query.action` | JSON; `company=<issuer>` filters by issuer; returns category (e.g. managers' transactions), EN/LT versions, PDF attachments; history from 2019 (Artea's includes the Šiaulių bankas years). `fromDate`/`toDate` are ignored, so pages are read newest first and cut by date. Served through Imperva; a plain HTTP client (curl, requests) gets JSON. Releases are in UTC (`+0000`) unless `timeZone` is set. Each announcement's text is in `#view-body` on its `messageUrl` page. |
 | nasdaqbaltic.com market news | Same announcements, server-rendered HTML behind Incapsula; issuer filter takes the issuer name (`?issuer=Apranga`). |
 | Yahoo Finance | Prices for `APG1L.VS`, `ROE1L.VS`, `LHV1T.TL`, `SAF1R.RG` and the OMX Vilnius, Riga, Tallinn and Baltic Benchmark GI indexes; no news articles for either sample share. |
 | filings.xbrl.org | ESEF annual reports by LEI with xBRL-JSON (`json_url`) and the date each was added. |
@@ -41,8 +53,6 @@ your own copy outside the package with
 
 ## Next stages
 
-3. `nasdaq_baltic` vendor: company announcements for `get_news`, managers'
-   transactions for `get_insider_transactions`.
 4. Local media, cache, English summaries.
 5. `baltic_filings`: ESEF annual and quarterly report figures, bank template.
 6. `eu_macro`: ECB, Eurostat, Bank of Lithuania; Baltic sentiment without
