@@ -158,9 +158,9 @@ def build_default_config() -> dict:
         "data_vendors": {
             "core_stock_apis": "yfinance",       # Options: alpha_vantage, yfinance
             "technical_indicators": "yfinance",  # Options: alpha_vantage, yfinance
-            # Statements come from SEC EDGAR as filed (US filers), then Yahoo; the
-        # overview and insider tools, which SEC EDGAR does not serve, from Yahoo.
-        "fundamental_data": "sec_edgar,yfinance",  # Options: sec_edgar, alpha_vantage, yfinance
+            # Statements come as filed: ESEF for registered Baltic shares, SEC EDGAR
+        # for US filers, then Yahoo; the overview, which neither serves, from Yahoo.
+        "fundamental_data": "baltic,sec_edgar,yfinance",  # Options: baltic, sec_edgar, alpha_vantage, yfinance
             # Baltic sources first: they serve the Baltic shares in the registry
             # (Nasdaq announcements + press) and pass every other ticker to Yahoo.
             "news_data": "baltic,yfinance",  # Options: baltic, nasdaq_baltic, alpha_vantage, yfinance

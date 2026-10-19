@@ -33,3 +33,12 @@ def test_press_coverage_and_announcements_together():
     report = baltic.get_news("ROE1L", f"{start:%Y-%m-%d}", f"{end:%Y-%m-%d}")
     print(report[-3000:])
     assert "Press coverage" in report or "No press headlines" in report
+
+
+def test_annual_statements_from_esef():
+    from tradingagents.dataflows.vendors import baltic
+
+    report = baltic.get_income_statement("APG1L", "quarterly")
+    print(report[:4000])
+    assert "as filed in ESEF" in report
+    assert "| Net profit |" in report
