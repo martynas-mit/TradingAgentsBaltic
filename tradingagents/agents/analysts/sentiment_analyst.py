@@ -31,6 +31,7 @@ from tradingagents.agents.structured import (
     invoke_structured_or_freetext,
 )
 from tradingagents.agents.tools import get_news
+from tradingagents.dataflows.baltic import is_baltic
 from tradingagents.dataflows.vendors.reddit import (
     CRYPTO_SUBREDDITS,
     DEFAULT_SUBREDDITS,
@@ -38,6 +39,12 @@ from tradingagents.dataflows.vendors.reddit import (
     subreddits_for,
 )
 from tradingagents.dataflows.vendors.stocktwits import fetch_stocktwits_messages
+
+_BALTIC_SOCIAL = (
+    "<Not collected: Nasdaq Baltic shares are not discussed on StockTwits or these "
+    "subreddits, so this source carries no signal for this share. Weigh the news "
+    "block, which holds the company's own announcements and the local press.>"
+)
 
 
 def _seven_days_back(trade_date: str) -> str:
@@ -66,14 +73,19 @@ def create_sentiment_analyst(llm):
         news_block = get_news.func(ticker, start_date, end_date)
         # Pass the analysis window so a historical run trims social posts to it
         # instead of leaking today's chatter into a backtest (#1220).
-        screen = jev_screen(ticker)
-        stocktwits_block = fetch_stocktwits_messages(
-            ticker, limit=30, start_date=start_date, end_date=end_date, screen=screen
-        )
         subreddits = subreddits_for(ticker)
-        reddit_block = fetch_reddit_posts(
-            ticker, subreddits, start_date=start_date, end_date=end_date, screen=screen
-        )
+        if is_baltic(ticker):
+            # Nobody discusses Baltic shares on StockTwits or these subreddits; an
+            # empty feed would read as neutral sentiment rather than no signal.
+            stocktwits_block = reddit_block = _BALTIC_SOCIAL
+        else:
+            screen = jev_screen(ticker)
+            stocktwits_block = fetch_stocktwits_messages(
+                ticker, limit=30, start_date=start_date, end_date=end_date, screen=screen
+            )
+            reddit_block = fetch_reddit_posts(
+                ticker, subreddits, start_date=start_date, end_date=end_date, screen=screen
+            )
 
         system_message = _build_system_message(
             ticker=ticker,

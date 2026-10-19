@@ -5,7 +5,9 @@ import logging
 from collections.abc import Mapping
 from typing import Any
 
+from tradingagents.dataflows.baltic.registry import MARKETS, is_baltic
 from tradingagents.dataflows.date_window import is_historical
+from tradingagents.dataflows.symbols import normalize_symbol
 from tradingagents.dataflows.vendors.yahoo.fundamentals import get_company_profile
 
 logger = logging.getLogger(__name__)
@@ -104,6 +106,9 @@ def _identity(ticker: str) -> dict:
     return identity
 
 
+_BALTIC_COUNTRY = {"Vilnius": "lithuania", "Riga": "latvia", "Tallinn": "estonia"}
+
+
 def build_instrument_context(
     ticker: str,
     asset_type: str = "stock",
@@ -165,6 +170,14 @@ def build_instrument_context(
         context += (
             " Treat it as a crypto asset rather than a company, and do not "
             "assume company fundamentals are available."
+        )
+    elif is_baltic(ticker):
+        market = MARKETS[normalize_symbol(ticker)[-3:]]
+        country = _BALTIC_COUNTRY[market]
+        context += (
+            f" It is listed on Nasdaq {market}, in the euro area: for macro context use "
+            f"'ecb_deposit_rate', 'euro_hicp', '{country}_hicp' and '{country}_real_gdp' "
+            f"rather than US series."
         )
     return context
 

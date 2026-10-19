@@ -18,7 +18,8 @@ Scope for now: shares only. Index funds and ETFs come later.
 | Company news | `baltic` vendor: the issuer's announcements on Nasdaq Baltic with their text (monthly turnover, results, dividends, AGM decisions), then press headlines from Google News in the market's language and English, without wire copies of the announcements; all dated by publication |
 | Insider trades | `baltic` vendor: managers' transactions notified under MAR article 19 in the year to the run date; trade details are in each notice's text or PDF |
 | Statements | `baltic` vendor: annual income statement, balance sheet and cash flow from the company's ESEF reports on filings.xbrl.org (by LEI), served only once filed, newest report winning for a restated year; a quarterly request adds the text of the two latest interim report announcements |
-| Euro-area macro | Not yet |
+| Macro | FRED aliases `lithuania_hicp`, `latvia_hicp`, `estonia_hicp`, `lithuania_real_gdp`, `latvia_real_gdp`, `estonia_real_gdp` beside upstream's euro-area ones (`ecb_deposit_rate`, `euro_hicp`); the instrument context points agents at them for Baltic shares. Needs `FRED_API_KEY` |
+| Sentiment | StockTwits and Reddit are skipped for Baltic shares and the prompt says why, so an empty feed is not read as neutral; the news block (announcements and press) carries the signal |
 
 ```bash
 tradingagents --ticker APG1L --date 2026-10-16 --analysts market,news --save --no-show
@@ -59,7 +60,8 @@ your own copy outside the package with
 | GDELT DOC 2.0 | No articles on Artea in 3 months; one request per 5 seconds. Low value. |
 | Google News RSS `news.google.com/rss/search` | Keyless; `after:`/`before:` in the query bound the window, so past windows work; `hl=lt&gl=LT&ceid=LT:lt` for Lithuanian media (vz.lt, Delfi, 15min, LRT, tv3). Up to 100 items; titles end with ` - <source>`. |
 
-## Next stages
+## Not covered yet
 
-6. `eu_macro`: ECB, Eurostat, Bank of Lithuania; Baltic sentiment without
-   StockTwits and Reddit.
+- Index funds and ETFs (e.g. AUM5 on Xetra): a mode without company news and statements.
+- Trade details inside managers' transaction PDFs; full interim statements (PDF).
+- Unemployment and retail-trade series for the Baltic states (no FRED series verified yet).

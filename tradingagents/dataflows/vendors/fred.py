@@ -87,6 +87,13 @@ MACRO_SERIES = {
     "germany_10y": "IRLTLT01DEM156N",
     "france_10y": "IRLTLT01FRM156N",
     "eur_usd": "DEXUSEU",
+    # Baltic states (Nasdaq Vilnius, Riga, Tallinn): Eurostat HICP and real GDP.
+    "lithuania_hicp": "CP0000LTM086NEST",
+    "latvia_hicp": "CP0000LVM086NEST",
+    "estonia_hicp": "CP0000EEM086NEST",
+    "lithuania_real_gdp": "CLVMNACSCAB1GQLT",
+    "latvia_real_gdp": "CLVMNACSCAB1GQLV",
+    "estonia_real_gdp": "CLVMNACSCAB1GQEE",
 }
 
 

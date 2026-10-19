@@ -237,7 +237,9 @@ def get_macro_indicators(
         "'unemployment', 'fed_funds_rate', '10y_treasury', 'yield_curve', "
         "'real_gdp', 'vix', euro-area aliases such as 'ecb_deposit_rate', "
         "'euro_hicp', 'euro_core_hicp', 'euro_real_gdp', 'germany_10y', "
-        "'france_10y', 'eur_usd', or a raw FRED series ID such as 'CPIAUCSL'.",
+        "'france_10y', 'eur_usd', Baltic aliases 'lithuania_hicp', 'latvia_hicp', "
+        "'estonia_hicp', 'lithuania_real_gdp', 'latvia_real_gdp', 'estonia_real_gdp', "
+        "or a raw FRED series ID such as 'CPIAUCSL'.",
     ],
     curr_date: Annotated[str, "Current date in yyyy-mm-dd format; the end of the window"],
     look_back_days: Annotated[
