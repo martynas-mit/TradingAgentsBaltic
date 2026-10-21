@@ -30,6 +30,7 @@ from pathlib import Path
 import requests
 
 from tradingagents import __version__
+from tradingagents.dataflows import proxy
 from tradingagents.dataflows.baltic import BalticInstrument, is_baltic, lookup
 from tradingagents.dataflows.config import get_config
 from tradingagents.dataflows.date_window import get_current_date, in_window, to_utc
@@ -97,6 +98,10 @@ def _parse_time(value: str | None) -> datetime | None:
     return None
 
 
+def _looks_like_json(response) -> bool:
+    return (response.text or "").lstrip()[:1] in ("{", "[")
+
+
 def _fetch_page(issuer: str, start: int) -> list[dict]:
     params = {
         "type": "json",
@@ -112,7 +117,8 @@ def _fetch_page(issuer: str, start: int) -> list[dict]:
         "countResults": "false",
     }
     try:
-        response = requests.get(API_URL, params=params, headers=_HEADERS, timeout=_TIMEOUT)
+        response = proxy.get(API_URL, params=params, headers=_HEADERS, timeout=_TIMEOUT,
+                             expect=_looks_like_json)
         response.raise_for_status()
         payload = response.json()
     except requests.RequestException as exc:
@@ -260,8 +266,9 @@ def _body(announcement: dict) -> str:
         except OSError:
             pass
     try:
-        response = requests.get(
-            announcement["url"], headers={**_HEADERS, "Accept": "text/html"}, timeout=_TIMEOUT
+        response = proxy.get(
+            announcement["url"], headers={**_HEADERS, "Accept": "text/html"}, timeout=_TIMEOUT,
+            expect=lambda r: 'id="view-body"' in r.text,
         )
         response.raise_for_status()
     except requests.RequestException as exc:

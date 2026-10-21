@@ -42,6 +42,24 @@ Live check (reaches the network):
 pytest -m integration tests/test_nasdaq_baltic_live.py -s
 ```
 
+## Proxy fallback
+
+Some sources refuse cloud addresses (a Railway container). With a proxy URL set,
+a blocked request (HTTP 403/407/429/503, a dropped connection, or a bot-check
+page instead of the JSON or RSS asked for) is sent once more through the proxy,
+and that host goes through the proxy for the cooldown. Only Nasdaq, Google News,
+filings.xbrl.org and Yahoo may use it; SEC EDGAR, FRED and the LLM providers
+always go direct.
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `WEBSHARE_PROXY_URL` or `TRADINGAGENTS_PROXY_URL` | unset | e.g. `http://<user>-rotate:<password>@p.webshare.io:80` |
+| `TRADINGAGENTS_PROXY_MODE` | `fallback` when a URL is set | `off`, `fallback`, `always` |
+| `TRADINGAGENTS_PROXY_HOSTS` | Nasdaq, Google News, filings.xbrl.org, Yahoo | comma-separated hosts (subdomains included) |
+| `TRADINGAGENTS_PROXY_COOLDOWN_MIN` | `30` | minutes a blocking host stays on the proxy |
+
+`tradingagents.dataflows.proxy.usage()` reports the requests sent through it.
+
 ## Registry
 
 Each share the Baltic vendors should know needs an `[[instrument]]` entry. Keep

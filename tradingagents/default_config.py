@@ -175,6 +175,12 @@ def build_default_config() -> dict:
         # Baltic data vendors. None reads the registry packaged with
         # tradingagents (dataflows/baltic/instruments.toml); a path reads your own.
         "baltic_registry_path": os.getenv("TRADINGAGENTS_BALTIC_REGISTRY") or None,
+        # Proxy to fall back on when a news or filings source blocks this machine
+        # (see dataflows/proxy.py). Unset leaves every request direct.
+        "proxy_url": os.getenv("TRADINGAGENTS_PROXY_URL") or os.getenv("WEBSHARE_PROXY_URL") or None,
+        "proxy_mode": os.getenv("TRADINGAGENTS_PROXY_MODE") or None,  # off | fallback | always
+        "proxy_hosts": os.getenv("TRADINGAGENTS_PROXY_HOSTS") or None,  # comma list; None = defaults
+        "proxy_cooldown_min": float(os.getenv("TRADINGAGENTS_PROXY_COOLDOWN_MIN") or 30),
         # Benchmark for alpha calculation in the reflection layer.
         # ``benchmark_ticker`` (when set) overrides the suffix map for all
         # tickers; leave it None to use ``benchmark_map`` for auto-detection

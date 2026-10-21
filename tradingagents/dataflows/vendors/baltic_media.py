@@ -27,6 +27,7 @@ from datetime import datetime, timedelta
 import requests
 
 from tradingagents import __version__
+from tradingagents.dataflows import proxy
 from tradingagents.dataflows.baltic import BalticInstrument
 from tradingagents.dataflows.date_window import in_window, to_utc
 from tradingagents.dataflows.errors import VendorUnavailableError
@@ -102,11 +103,12 @@ def _query(names: tuple[str, ...], start_dt: datetime, end_dt: datetime) -> str:
 def _search(query: str, edition: tuple[str, str, str]) -> list[dict]:
     hl, gl, ceid = edition
     try:
-        response = requests.get(
+        response = proxy.get(
             RSS_URL,
             params={"q": query, "hl": hl, "gl": gl, "ceid": ceid},
             headers=_HEADERS,
             timeout=_TIMEOUT,
+            expect=lambda r: "<rss" in (r.text or "")[:500],
         )
         response.raise_for_status()
     except requests.RequestException as exc:

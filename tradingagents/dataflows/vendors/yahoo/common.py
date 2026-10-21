@@ -6,6 +6,7 @@ import time
 import yfinance as yf
 from yfinance.exceptions import YFPricesMissingError, YFRateLimitError
 
+from tradingagents.dataflows import proxy
 from tradingagents.dataflows.errors import NoMarketDataError, VendorUnavailableError
 from tradingagents.dataflows.net import vendor_reachable
 
@@ -46,6 +47,22 @@ def _answered_empty(exc: Exception) -> bool:
     return getattr(getattr(exc, "response", None), "status_code", None) == 404
 
 
+def _use_proxy_if_blocked() -> None:
+    """Point yfinance at the proxy while Yahoo is marked as blocking, else direct."""
+    target = proxy.yfinance_proxy()
+    if yf.config.network.proxy != target:
+        yf.set_config(proxy=target)
+
+
+def _switch_to_proxy() -> bool:
+    """After a failed or throttled request: whether a proxy is available and not yet in use."""
+    if not proxy.eligible(YAHOO_HOST) or yf.config.network.proxy:
+        return False
+    proxy.mark_blocked(YAHOO_HOST)
+    _use_proxy_if_blocked()
+    return True
+
+
 def yf_retry(func, max_retries=3, base_delay=2.0):
     """Execute a yfinance call with exponential backoff on rate limits.
 
@@ -58,10 +75,13 @@ def yf_retry(func, max_retries=3, base_delay=2.0):
     itself: a Ticker keeps a failed ``info`` fetch as done, so asking the same
     one again reads an empty profile.
     """
+    _use_proxy_if_blocked()
     for attempt in range(max_retries + 1):
         try:
             return func()
         except YFRateLimitError as exc:
+            if attempt == max_retries and _switch_to_proxy():
+                return yf_retry(func, max_retries=0, base_delay=base_delay)
             if attempt < max_retries:
                 delay = base_delay * (2 ** attempt)
                 logger.warning(f"Yahoo Finance rate limited, retrying in {delay:.0f}s (attempt {attempt + 1}/{max_retries})")
@@ -73,4 +93,6 @@ def yf_retry(func, max_retries=3, base_delay=2.0):
         except Exception as exc:
             if _answered_empty(exc):
                 return None
+            if _switch_to_proxy():
+                return yf_retry(func, max_retries=0, base_delay=base_delay)
             raise VendorUnavailableError(f"Yahoo Finance request failed: {type(exc).__name__}") from exc

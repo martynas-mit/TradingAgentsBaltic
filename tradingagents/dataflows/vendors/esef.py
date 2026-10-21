@@ -27,6 +27,7 @@ from pathlib import Path
 import requests
 
 from tradingagents import __version__
+from tradingagents.dataflows import proxy
 from tradingagents.dataflows.config import get_config
 from tradingagents.dataflows.date_window import get_current_date
 from tradingagents.dataflows.errors import NoMarketDataError, VendorUnavailableError
@@ -137,7 +138,8 @@ _WANTED = {concept for _, lines, _ in STATEMENTS.values() for concept, _ in line
 
 def _get_json(url: str, params: dict | None = None) -> dict:
     try:
-        response = requests.get(url, params=params, headers=_HEADERS, timeout=_TIMEOUT)
+        response = proxy.get(url, params=params, headers=_HEADERS, timeout=_TIMEOUT,
+                             expect=lambda r: (r.text or "").lstrip()[:1] in ("{", "["))
         response.raise_for_status()
         return response.json()
     except requests.RequestException as exc:
